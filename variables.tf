@@ -3,13 +3,24 @@ variable "aws_region" {
   default     = "us-east-1"
 }
 
-variable "aws_account_id" {
-  description = "AWS account ID"
+variable "aws_profile" {
+  description = "The AWS CLI profile on the local filesystem to use"
+  default     = "jbench-certs"
+}
+
+variable "ecs_cluster_name" {
+  description = "Name of the ecs cluster to create"
+  default     = "example-ecs-cluster"
 }
 
 variable "app_image" {
   description = "Docker image to run in the ECS cluster"
   default     = "jbench-fargate:latest"
+}
+
+variable "app_name" {
+  description = "Name of the container to run as a task"
+  default     = "jbench-fargate"
 }
 
 variable "app_count" {
