@@ -19,14 +19,14 @@ resource "aws_ecs_task_definition" "main_task" {
   memory                   = "${var.fargate_memory}"
 
   container_definitions = <<DEFINITION
-      [
-        {
-          "image": "${var.app_image}",
-          "name": "${var.app_name}",
-          "networkMode": "awsvpc"
-        }
-      ]
-    DEFINITION
+[
+  {
+    "image": "${var.app_image}",
+    "name": "${var.app_name}",
+    "networkMode": "awsvpc"
+  }
+]
+DEFINITION
 }
 
 ## IAM
@@ -34,41 +34,42 @@ resource "aws_ecs_task_definition" "main_task" {
 resource "aws_iam_role" "ecs_events" {
   name = "ecs_events"
   assume_role_policy = <<DOC
-      {
-        "Version": "2012-10-17",
-        "Statement": [
-          {
-            "Sid": "",
-            "Effect": "Allow",
-            "Principal": {
-              "Service": "events.amazonaws.com"
-            },
-            "Action": "sts:AssumeRole"
-          }
-        ]
-      }
-    DOC
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "events.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
 }
-resource "aws_iam_role_policy" "ecs_events_run_task_with_any_role" {
-  name = "ecs_events_run_task_with_any_role"
+DOC
+}
+
+resource "aws_iam_role_policy" "ecs_events_run_task" {
+  name = "ecs_events_run_task"
   role = "${aws_iam_role.ecs_events.id}"
   policy = <<DOC
-      {
-          "Version": "2012-10-17",
-          "Statement": [
-              {
-                  "Effect": "Allow",
-                  "Action": "iam:PassRole",
-                  "Resource": "*"
-              },
-              {
-                  "Effect": "Allow",
-                  "Action": "ecs:RunTask",
-                  "Resource": "${replace(aws_ecs_task_definition.main_task.arn, "/:\\d+$/", ":*")}"
-              }
-          ]
-      }
-    DOC
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": "iam:PassRole",
+            "Resource": "${replace(aws_iam_role.ecs_events.arn, "/:\\d+$/", ":*")}"
+        },
+        {
+            "Effect": "Allow",
+            "Action": "ecs:RunTask",
+            "Resource": "${replace(aws_ecs_task_definition.main_task.arn, "/:\\d+$/", ":*")}"
+        }
+    ]
+}
+DOC
 }
 
 ## CloudWatch
