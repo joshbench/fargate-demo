@@ -5,7 +5,7 @@ variable "aws_region" {
 
 variable "aws_profile" {
   description = "The AWS CLI profile on the local filesystem to use"
-  default     = "jbench-certs"
+  default     = "default"
 }
 
 variable "ecs_cluster_name" {
